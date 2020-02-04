@@ -8,8 +8,6 @@ def load_wordlist(filename):
         lines = f.readlines()
         for line in lines:
             wordlist.append(line.strip())
-    for i in range(0,5):
-        print(wordlist[i])
 
     return wordlist
 
@@ -24,12 +22,19 @@ def brute_force(hashedpass, wordlist):
                 print(hash)
                 break
 
+def generate_dictionary(wordlist_address):
+    wordlist = load_wordlist(wordlist_address)
+
+    split_path = wordlist_address.split(".")
+    new_path = "wordlists/" + split_path[0] + "_dict." + split_path[1]
+    print(new_path)
+    
+    hash_dict = open(new_path, "w")
+    hash_dict.write("test")
+    hash_dict.close()
+
 def main():
-    print("Password cracker, using RockYou wordlist and brute force approach")
-    wordlist = load_wordlist("rockyou-75.txt")
-    hashedpass = hashlib.md5("password".encode('utf-8')).hexdigest()
-    print(hashedpass)
-    brute_force(hashedpass, wordlist)
+    print(generate_dictionary("rockyou-75.txt"))
 
 if __name__ == "__main__":
     main()
