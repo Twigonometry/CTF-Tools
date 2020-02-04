@@ -38,8 +38,17 @@ def generate_dictionary(wordlist_address):
     dict_file.write(json.dumps(hash_dict))
     dict_file.close()
 
+def load_dictionary(file_path):
+    hash_dict = {}
+
+    f = open(file_path)
+    raw = f.read()
+    hash_dict = json.loads(raw)
+
+    return hash_dict
+
 def main():
-    print(generate_dictionary("rockyou-25.txt"))
+    print(load_dictionary("wordlists/rockyou-25_dict.txt"))
 
 if __name__ == "__main__":
     main()
