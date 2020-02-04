@@ -1,4 +1,5 @@
 import hashlib
+import json
 
 def load_wordlist(filename):
     print("Attempting to load word list from /wordlists/" + filename)
@@ -24,17 +25,21 @@ def brute_force(hashedpass, wordlist):
 
 def generate_dictionary(wordlist_address):
     wordlist = load_wordlist(wordlist_address)
+    hash_dict = {}
+    for word in wordlist:
+        hash = hashlib.md5(word.encode('utf-8')).hexdigest()
+        hash_dict[word] = hash
 
     split_path = wordlist_address.split(".")
     new_path = "wordlists/" + split_path[0] + "_dict." + split_path[1]
     print(new_path)
     
-    hash_dict = open(new_path, "w")
-    hash_dict.write("test")
-    hash_dict.close()
+    dict_file = open(new_path, "w")
+    dict_file.write(json.dumps(hash_dict))
+    dict_file.close()
 
 def main():
-    print(generate_dictionary("rockyou-75.txt"))
+    print(generate_dictionary("rockyou-25.txt"))
 
 if __name__ == "__main__":
     main()
