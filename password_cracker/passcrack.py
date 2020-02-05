@@ -19,13 +19,33 @@ def brute_force(hashedpass, wordlist):
 
     choice = input("Select hashing algorithm:\n1. MD5")
     if choice=="1":
-        print("running using MD5")
+        print("Running brute force attack using MD5")
         for word in wordlist:
             hash = hashlib.md5(word.encode('utf-8')).hexdigest()
             if hash == hashedpass:
                 print("password: " + word)
                 print(hash)
                 break
+
+def brute_force_dict(hashedpass, file_path):
+    """brute force attack using precomputed hash dictionary"""
+
+    choice = input("Select hashing algorithm:\n1. MD5")
+    if choice=="1":
+        print("Running dictionary attack using MD5")
+        hash_dict = load_dictionary(file_path)
+        found = False
+        
+        for key in hash_dict:
+            if hashedpass == hash_dict[key]:
+                print("Match found:")
+                print("Password: " + key)
+                print("Hash: " + hashedpass)
+                found = True
+                break
+        
+        if not found:
+            print("No match found")
 
 def generate_dictionary(wordlist_address):
     """generate a dictionary by hashing all passwords in a wordlist
@@ -57,7 +77,7 @@ def load_dictionary(file_path):
     return hash_dict
 
 def main():
-    print(load_dictionary("wordlists/rockyou-25_dict.txt"))
+    brute_force_dict("5f4dcc3b5aa765d61d8327deb882cf99", "wordlists/rockyou-25_dict.txt")
 
 if __name__ == "__main__":
     main()
