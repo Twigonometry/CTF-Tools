@@ -1,7 +1,7 @@
 import hashlib
 import json
 
-ALGORITHM_NAMES = {"1": "MD5", "2": "SHA-1"}
+ALGORITHM_NAMES = {"1": "MD5", "2": "SHA-1", "3": "SHA-256", "4": "SHA-512"}
 
 def load_wordlist(file_path):
     """load a wordlist from file"""
@@ -28,6 +28,10 @@ def brute_force(hashedpass, wordlist, alg_name):
             hash = hashlib.md5(word.encode('utf-8')).hexdigest()
         elif alg_name == "SHA-1":
             hash = hashlib.sha1(word.encode('utf-8')).hexdigest()
+        elif alg_name == "SHA-256":
+            hash = hashlib.sha256(word.encode('utf-8')).hexdigest()
+        elif alg_name == "SHA-512":
+            hash = hashlib.sha512(word.encode('utf-8')).hexdigest()
         if hash == hashedpass:
             found = True
             print("Match found:")
@@ -74,6 +78,10 @@ def generate_dictionary(file_path, alg_name):
             hash = hashlib.md5(word.encode('utf-8')).hexdigest()
         elif alg_name == "SHA-1":
             hash = hashlib.sha1(word.encode('utf-8')).hexdigest()
+        elif alg_name == "SHA-256":
+            hash = hashlib.sha256(word.encode('utf-8')).hexdigest()
+        elif alg_name == "SHA-512":
+            hash = hashlib.sha512(word.encode('utf-8')).hexdigest()
         hash_dict[word] = hash
 
     split_path = file_path.split(".")
@@ -102,7 +110,7 @@ def crack_list(hash_list, file_path):
     method = input("Select attack method:\n1. Brute Force \n2. Brute Force Dictionary\n")
 
     #select hashing algorithm
-    alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n")
+    alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n")
     alg_name = ALGORITHM_NAMES[alg_choice]
 
     #iterate over list
@@ -118,7 +126,8 @@ def crack_list(hash_list, file_path):
             brute_force_dict(hash, new_path, alg_name)
 
 def main():
-    crack_list(["7c4a8d09ca3762af61e59520943dc26494f8941b", "8cb2237d0679ca88db6464eac60da96345513964"], "rockyou-25.txt")
+    crack_list(["8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"], "rockyou-25.txt")
+    crack_list(["ba3253876aed6bc22d4a6ff53d8406c6ad864195ed144ab5c87621b6c233b548baeae6956df346ec8c17f5ea10f35ee3cbc514797ed7ddd3145464e2a0bab413"], "rockyou-25.txt")
 
 if __name__ == "__main__":
     main()
