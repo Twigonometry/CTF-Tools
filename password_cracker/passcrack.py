@@ -1,6 +1,8 @@
 import hashlib
 import json
 
+ALGORITHM_NAMES = {"1": "MD5", "2": "SHA-1"}
+
 def load_wordlist(file_path):
     """load a wordlist from file"""
 
@@ -14,45 +16,49 @@ def load_wordlist(file_path):
 
     return wordlist
 
-def brute_force(hashedpass, wordlist, choice):
+def brute_force(hashedpass, wordlist, alg_name):
     """brute force a wordlist using a given algorithm, outputting the password"""
 
-    if choice=="1":
-        print("Running brute force attack using MD5")
-        found = False
+    found = False
 
-        for word in wordlist:
+    print("Running brute force attack using " + alg_name)
+
+    for word in wordlist:
+        if alg_name == "MD5":
             hash = hashlib.md5(word.encode('utf-8')).hexdigest()
-            if hash == hashedpass:
-                found = True
-                print("Match found:")
-                print("Password: " + word)
-                print("Hash: " + hash)
-                print()
-                break
+        if hash == hashedpass:
+            found = True
+            print("Match found:")
+            print("Password: " + word)
+            print("Hash: " + hash)
+            print()
+            break
 
-        if not found:
-            print("No match found")
+    if not found:
+        print("No match found")
 
-def brute_force_dict(hashedpass, file_path, choice):
+def brute_force_dict(hashedpass, file_path, alg_name):
     """brute force attack using precomputed hash dictionary"""
 
-    if choice=="1":
-        print("Running dictionary attack using MD5")
-        hash_dict = load_dictionary(file_path)
-        found = False
-        
-        for key in hash_dict:
-            if hashedpass == hash_dict[key]:
-                print("Match found:")
-                print("Password: " + key)
-                print("Hash: " + hashedpass)
-                print()
-                found = True
-                break
-        
-        if not found:
-            print("No match found")
+    print("Running dictionary attack using " + alg_name)
+
+    split_path = file_path.split(".")
+    new_path = split_path[0] + "_" + alg_name + "." + split_path[1]
+
+    hash_dict = load_dictionary(new_path)
+    found = False
+    
+    for key in hash_dict:
+        if hashedpass == hash_dict[key]:
+            print("Match found:")
+            print("Password: " + key)
+            print("Hash: " + hashedpass)
+            print()
+            found = True
+            break
+    
+    if not found:
+        print("No match found")
 
 def generate_dictionary(file_path, algorithm):
     """generate a dictionary by hashing all passwords in a wordlist
@@ -92,22 +98,23 @@ def crack_list(hash_list, file_path):
     method = input("Select attack method:\n1. Brute Force \n2. Brute Force Dictionary\n")
 
     #select hashing algorithm
-    choice = input("Select hashing algorithm:\n1. MD5\n")
+    alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n")
+    alg_name = ALGORITHM_NAMES[alg_choice]
 
     #iterate over list
     if method == "1":
         wordlist = load_wordlist(file_path)
         for hash in hash_list:
-            brute_force(hash, wordlist, choice)
+            brute_force(hash, wordlist, alg_name)
     elif method == "2":
         split_path = file_path.split(".")
         new_path = "wordlists/" + split_path[0] + "_dict." + split_path[1]
         
         for hash in hash_list:
-            brute_force_dict(hash, new_path, choice)
+            brute_force_dict(hash, new_path, alg_name)
 
 def main():
-    generate_dictionary("rockyou-25.txt", "MD5")
+    crack_list(["e10adc3949ba59abbe56e057f20f883e", "827ccb0eea8a706c4c34a16891f84e7b"], "rockyou-25.txt")
 
 if __name__ == "__main__":
     main()
