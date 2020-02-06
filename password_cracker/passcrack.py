@@ -1,12 +1,12 @@
 import hashlib
 import json
 
-def load_wordlist(filename):
+def load_wordlist(file_path):
     """load a wordlist from file"""
 
-    print("Attempting to load word list from /wordlists/" + filename + "\n")
+    print("Attempting to load word list from /wordlists/" + file_path + "\n")
     wordlist = list()
-    f = open("wordlists/" + filename, "r")
+    f = open("wordlists/" + file_path, "r")
     if(f.mode == 'r'):
         lines = f.readlines()
         for line in lines:
@@ -54,11 +54,11 @@ def brute_force_dict(hashedpass, file_path, choice):
         if not found:
             print("No match found")
 
-def generate_dictionary(wordlist_address, algorithm):
+def generate_dictionary(file_path, algorithm):
     """generate a dictionary by hashing all passwords in a wordlist
     and save this dictionary to file"""
 
-    wordlist = load_wordlist(wordlist_address)
+    wordlist = load_wordlist(file_path)
     hash_dict = {}
 
     if algorithm == "MD5":
@@ -66,7 +66,7 @@ def generate_dictionary(wordlist_address, algorithm):
             hash = hashlib.md5(word.encode('utf-8')).hexdigest()
             hash_dict[word] = hash
 
-    split_path = wordlist_address.split(".")
+    split_path = file_path.split(".")
     new_path = "wordlists/" + split_path[0] + "_dict_" + algorithm + "." + split_path[1]
     print("New dictionary created at: " + new_path)
     
