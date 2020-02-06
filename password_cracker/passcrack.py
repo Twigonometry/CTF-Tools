@@ -54,19 +54,21 @@ def brute_force_dict(hashedpass, file_path, choice):
         if not found:
             print("No match found")
 
-def generate_dictionary(wordlist_address):
+def generate_dictionary(wordlist_address, algorithm):
     """generate a dictionary by hashing all passwords in a wordlist
     and save this dictionary to file"""
 
     wordlist = load_wordlist(wordlist_address)
     hash_dict = {}
-    for word in wordlist:
-        hash = hashlib.md5(word.encode('utf-8')).hexdigest()
-        hash_dict[word] = hash
+
+    if algorithm == "MD5":
+        for word in wordlist:
+            hash = hashlib.md5(word.encode('utf-8')).hexdigest()
+            hash_dict[word] = hash
 
     split_path = wordlist_address.split(".")
-    new_path = "wordlists/" + split_path[0] + "_dict." + split_path[1]
-    print(new_path)
+    new_path = "wordlists/" + split_path[0] + "_dict_" + algorithm + "." + split_path[1]
+    print("New dictionary created at: " + new_path)
     
     dict_file = open(new_path, "w")
     dict_file.write(json.dumps(hash_dict))
@@ -84,6 +86,8 @@ def load_dictionary(file_path):
     return hash_dict
 
 def crack_list(hash_list, file_path):
+    """crack a list of hashes"""
+    
     #select method
     method = input("Select attack method:\n1. Brute Force \n2. Brute Force Dictionary\n")
 
@@ -103,8 +107,7 @@ def crack_list(hash_list, file_path):
             brute_force_dict(hash, new_path, choice)
 
 def main():
-    hash_list = ["e10adc3949ba59abbe56e057f20f883e", "827ccb0eea8a706c4c34a16891f84e7b", "f78f2477e949bee2d12a2c540fb6084f"]
-    crack_list(hash_list, "rockyou-25.txt")
+    generate_dictionary("rockyou-25.txt", "MD5")
 
 if __name__ == "__main__":
     main()
