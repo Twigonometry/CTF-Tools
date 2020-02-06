@@ -26,6 +26,8 @@ def brute_force(hashedpass, wordlist, alg_name):
     for word in wordlist:
         if alg_name == "MD5":
             hash = hashlib.md5(word.encode('utf-8')).hexdigest()
+        elif alg_name == "SHA-1":
+            hash = hashlib.sha1(word.encode('utf-8')).hexdigest()
         if hash == hashedpass:
             found = True
             print("Match found:")
@@ -116,7 +118,7 @@ def crack_list(hash_list, file_path):
             brute_force_dict(hash, new_path, alg_name)
 
 def main():
-    generate_dictionary("rockyou-25.txt", "SHA-1")
+    crack_list(["7c4a8d09ca3762af61e59520943dc26494f8941b", "8cb2237d0679ca88db6464eac60da96345513964"], "rockyou-25.txt")
 
 if __name__ == "__main__":
     main()
