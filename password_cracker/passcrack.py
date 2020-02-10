@@ -68,6 +68,8 @@ def brute_force_dict(hashedpass, file_path, alg_name):
     if not found:
         print("No match found")
 
+    return found
+
 def generate_dictionary(file_path, alg_name):
     """generate a dictionary by hashing all passwords in a wordlist
     and save this dictionary to file"""
@@ -134,9 +136,19 @@ def crack_list(hash_list, file_path):
     elif method == "2":
         split_path = file_path.split(".")
         new_path = "wordlists/" + split_path[0] + "_dict." + split_path[1]
-        
-        for hash in hash_list:
-            brute_force_dict(hash, new_path, alg_name)
+
+        if alg_name == "CASCADE":
+            found = False
+            
+            #cascade through algorithms, stopping based on their boolean 'found' value
+            for hash in hash_list:
+                for alg_no in ALGORITHM_NAMES:
+                    found = brute_force_dict(hash, new_path, ALGORITHM_NAMES[alg_no])
+                    if found:
+                        break
+        else:
+            for hash in hash_list:
+                brute_force_dict(hash, new_path, alg_name)
 
 def main():
     crack_list(["8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"], "rockyou-25.txt")
