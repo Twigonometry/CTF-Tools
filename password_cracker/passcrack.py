@@ -150,9 +150,17 @@ def crack_list(hash_list, file_path):
             for hash in hash_list:
                 brute_force_dict(hash, new_path, alg_name)
 
+def hash_list_from_input(user_input):
+    return user_input.replace(" ","").split(",")
+
 def main():
-    crack_list(["8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"], "rockyou-25.txt")
-    crack_list(["ba3253876aed6bc22d4a6ff53d8406c6ad864195ed144ab5c87621b6c233b548baeae6956df346ec8c17f5ea10f35ee3cbc514797ed7ddd3145464e2a0bab413"], "rockyou-25.txt")
+    print("Welcome to the Password Cracker")
+    main_choice = input("1. Crack hashes\n")
+
+    if main_choice == "1":
+        hash_list = input("Enter list of hashes, separated by commas\n").replace(" ","").split(",")
+
+    print(hash_list)
 
 if __name__ == "__main__":
     main()
