@@ -1,7 +1,7 @@
 import hashlib
 import json
 
-ALGORITHM_NAMES = {"1": "MD5", "2": "SHA-1", "3": "SHA-256", "4": "SHA-512"}
+ALGORITHM_NAMES = {"1": "MD5", "2": "SHA-1", "3": "SHA-256", "4": "SHA-512", "5": "CASCADE"}
 
 def load_wordlist(file_path):
     """load a wordlist from file"""
@@ -42,6 +42,8 @@ def brute_force(hashedpass, wordlist, alg_name):
 
     if not found:
         print("No match found")
+
+    return found
 
 def brute_force_dict(hashedpass, file_path, alg_name):
     """brute force attack using precomputed hash dictionary"""
@@ -110,14 +112,25 @@ def crack_list(hash_list, file_path):
     method = input("Select attack method:\n1. Brute Force \n2. Brute Force Dictionary\n")
 
     #select hashing algorithm
-    alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n")
+    alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. Try all methods in order of complexity\n")
     alg_name = ALGORITHM_NAMES[alg_choice]
 
     #iterate over list
     if method == "1":
         wordlist = load_wordlist(file_path)
-        for hash in hash_list:
-            brute_force(hash, wordlist, alg_name)
+        if alg_name == "CASCADE":
+            found = False
+            
+            #cascade through algorithms, stopping based on their boolean 'found' value
+            for hash in hash_list:
+                for alg_no in ALGORITHM_NAMES:
+                    found = brute_force(hash, wordlist, ALGORITHM_NAMES[alg_no])
+                    if found:
+                        break
+
+        else:
+            for hash in hash_list:
+                brute_force(hash, wordlist, alg_name)
     elif method == "2":
         split_path = file_path.split(".")
         new_path = "wordlists/" + split_path[0] + "_dict." + split_path[1]
