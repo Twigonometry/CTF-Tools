@@ -150,19 +150,27 @@ def crack_list(hash_list, file_path):
             for hash in hash_list:
                 brute_force_dict(hash, new_path, alg_name)
 
-def hash_list_from_input(user_input):
-    return user_input.replace(" ","").split(",")
-
 def main():
     print("Welcome to the Password Cracker")
-    main_choice = input("1. Crack hashes\n")
+    main_choice = input("1. Crack hashes\n2. Generate a dictionary\n")
 
     if main_choice == "1":
+        """crack a list of hashes"""
+
         hash_list = input("Enter list of hashes, separated by commas\n").replace(" ","").split(",")
 
-        wordlist_path = input("Enter name of wordlist to be used (should be saved in /wordlists)\n")
+        file_path = input("Enter name of wordlist to be used (should be saved in /wordlists)\n")
 
-        crack_list(hash_list, wordlist_path)
+        crack_list(hash_list, file_path)
+    elif main_choice == "2":
+        """generate a dictionary of hashes"""
+
+        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n")
+        alg_name = ALGORITHM_NAMES[alg_choice]
+
+        file_path = input("Enter name of wordlist to be used (should be saved in /wordlists)\n")
+
+        generate_dictionary(file_path, alg_name)
 
 if __name__ == "__main__":
     main()
