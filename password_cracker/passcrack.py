@@ -160,7 +160,9 @@ def main():
     if main_choice == "1":
         hash_list = input("Enter list of hashes, separated by commas\n").replace(" ","").split(",")
 
-    print(hash_list)
+        wordlist_path = input("Enter name of wordlist to be used (should be saved in /wordlists)\n")
+
+        crack_list(hash_list, wordlist_path)
 
 if __name__ == "__main__":
     main()
