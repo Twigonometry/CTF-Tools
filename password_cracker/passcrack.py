@@ -171,7 +171,7 @@ def main():
     elif main_choice == "2":
         """generate a dictionary of hashes"""
 
-        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM")
+        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n")
         alg_name = ALGORITHM_NAMES[alg_choice]
 
         file_path = input("Enter name of wordlist to be used (should be saved in /wordlists)\n")
