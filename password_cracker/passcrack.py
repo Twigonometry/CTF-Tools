@@ -1,7 +1,8 @@
 import hashlib
 import json
+import binascii
 
-ALGORITHM_NAMES = {"1": "MD5", "2": "SHA-1", "3": "SHA-256", "4": "SHA-512", "5": "CASCADE"}
+ALGORITHM_NAMES = {"1": "MD5", "2": "SHA-1", "3": "SHA-256", "4": "SHA-512", "5": "NTLM", "6": "CASCADE"}
 
 def load_wordlist(file_path):
     """load a wordlist from file"""
@@ -32,6 +33,8 @@ def brute_force(hashedpass, wordlist, alg_name):
             hash = hashlib.sha256(word.encode('utf-8')).hexdigest()
         elif alg_name == "SHA-512":
             hash = hashlib.sha512(word.encode('utf-8')).hexdigest()
+        elif alg_name == "NTLM":
+            hash = binascii.hexlify(hashlib.new('md4', word.encode('utf-16le')).digest()).decode()
         if hash == hashedpass:
             found = True
             print("Match found:")
@@ -86,15 +89,18 @@ def generate_dictionary(file_path, alg_name):
             hash = hashlib.sha256(word.encode('utf-8')).hexdigest()
         elif alg_name == "SHA-512":
             hash = hashlib.sha512(word.encode('utf-8')).hexdigest()
+        elif alg_name == "NTLM":
+            hash = binascii.hexlify(hashlib.new('md4', word.encode('utf-16le')).digest()).decode()
         hash_dict[word] = hash
 
     split_path = file_path.split(".")
     new_path = "wordlists/" + split_path[0] + "_dict_" + alg_name + "." + split_path[1]
-    print("New dictionary created at: " + new_path)
     
     dict_file = open(new_path, "w")
     dict_file.write(json.dumps(hash_dict))
     dict_file.close()
+    
+    print("New dictionary created at: " + new_path)
 
 def load_dictionary(file_path):
     """load a dictionary from a text file"""
@@ -114,7 +120,7 @@ def crack_list(hash_list, file_path):
     method = input("Select attack method:\n1. Brute Force \n2. Brute Force Dictionary\n")
 
     #select hashing algorithm
-    alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. Try all methods in order of complexity\n")
+    alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. Try all methods in order of complexity\n")
     alg_name = ALGORITHM_NAMES[alg_choice]
 
     #iterate over list
@@ -165,7 +171,7 @@ def main():
     elif main_choice == "2":
         """generate a dictionary of hashes"""
 
-        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n")
+        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM")
         alg_name = ALGORITHM_NAMES[alg_choice]
 
         file_path = input("Enter name of wordlist to be used (should be saved in /wordlists)\n")
