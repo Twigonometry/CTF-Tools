@@ -3,7 +3,7 @@ import json
 import binascii
 import bcrypt
 
-ALGORITHM_NAMES = {"1": "MD5", "2": "SHA-1", "3": "SHA-256", "4": "SHA-512", "5": "NTLM", "6": "CASCADE"}
+ALGORITHM_NAMES = {"1": "MD5", "2": "SHA-1", "3": "SHA-256", "4": "SHA-512", "5": "NTLM", "6": "BCRYPT", "7": "CASCADE"}
 
 def load_wordlist(file_path):
     """load a wordlist from file"""
@@ -18,14 +18,10 @@ def load_wordlist(file_path):
 
     return wordlist
 
-def brute_force(hashedpass, wordlist, alg_name, **kwargs):
+def brute_force(hashedpass, wordlist, alg_name):
     """brute force a wordlist using a given algorithm, outputting the password"""
 
-    #get salt for algorithms that require it, such as bcrypt
-    #get number of rounds?
-    salt = None
-    if 'salt' in kwargs:
-        salt = kwargs.get('salt')
+    print(hashedpass)
 
     found = False
 
@@ -43,9 +39,10 @@ def brute_force(hashedpass, wordlist, alg_name, **kwargs):
         elif alg_name == "NTLM":
             hash = binascii.hexlify(hashlib.new('md4', word.encode('utf-16le')).digest()).decode()
         elif alg_name == "BCRYPT":
-            hash = bcrypt.hashpw(word, salt)
-            b_match = bcrypt.checkpw(hashedpass, hash)
-        if hash == hashedpass or b_match:
+            rounds, salt = parse_bcrypt(hashedpass)
+            hash = bcrypt.hashpw(word.encode('utf-8'), salt.encode('utf-8')).decode()
+            print(hash)
+        if hash == hashedpass:
             found = True
             print("Match found:")
             print("Password: " + word)
@@ -129,12 +126,12 @@ def crack_list(hash_list, file_path):
     #select method
     method = input("Select attack method:\n1. Brute Force\n2. Brute Force Dictionary\n")
 
-    #select hashing algorithm
-    alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. Try above methods in order of complexity\n")
-    alg_name = ALGORITHM_NAMES[alg_choice]
-
     #iterate over list
     if method == "1":
+        #select hashing algorithm
+        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. BCRYPT\n7. Try above methods in order of complexity\n")
+        alg_name = ALGORITHM_NAMES[alg_choice]
+        
         wordlist = load_wordlist(file_path)
         if alg_name == "CASCADE":
             found = False
@@ -150,6 +147,12 @@ def crack_list(hash_list, file_path):
             for hash in hash_list:
                 brute_force(hash, wordlist, alg_name)
     elif method == "2":
+        #select hashing algorithm
+        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. Try above methods in order of complexity\n")
+        if alg_choice == 6:
+            alg_choice = 7
+        alg_name = ALGORITHM_NAMES[alg_choice]
+
         split_path = file_path.split(".")
         new_path = "wordlists/" + split_path[0] + "_dict." + split_path[1]
 
@@ -166,24 +169,22 @@ def crack_list(hash_list, file_path):
             for hash in hash_list:
                 brute_force_dict(hash, new_path, alg_name)
 
-# def crack_bcrypt(hash_list, salt_list, file_path):
-#     """crack a list of bcrypt hashes, given a list of known salts"""
-#     wordlist = load_wordlist(file_path)
-
-#     for hash, salt in zip(hash_list, salt_list):
-#         brute_force(hash, wordlist, "BCRYPT", salt=salt)
-
 def parse_bcrypt(hash):
     """given a bcrypt hash, parse number of rounds and salt"""
     rounds = int(hash[4:6])
-    salt = hash[7:29]
+    #salt = hash[7:29]
+    salt = hash[0:29]
 
-    print(rounds)
-    print(salt)
+    return rounds, salt
 
 def main():
+    # rounds, salt = parse_bcrypt("$2a$12$EQBIh4LldRg/hseIeCwwyO8be5iwf6YtkLpChvSGChJETJT66SwI6")
+
+    # print(rounds)
+    # print(salt)
+
     print("Welcome to the Password Cracker")
-    main_choice = input("1. Crack hashes\n2. Crack bcrypt hashes with list of salts\n3. Generate a dictionary\n")
+    main_choice = input("1. Crack hashes\n2. Generate a dictionary\n")
 
     if main_choice == "1":
         """crack a list of hashes"""
@@ -194,17 +195,6 @@ def main():
 
         crack_list(hash_list, file_path)
     elif main_choice == "2":
-        """crack a list of bcrypt hashes"""
-
-        hash_list = input("Enter list of bcrypt hashes, separated by commas\n").replace(" ","").split(",")
-
-        #salt_list = input("Enter list of known salts, separated by commas\n").replace(" ","").split(",")
-
-        file_path = input("Enter name of wordlist to be used (should be saved in /wordlists)\n")
-
-        #crack_bcrypt(hash_list, salt_list, file_path)
-        parse_bcrypt(hash_list[0])
-    elif main_choice == "3":
         """generate a dictionary of hashes"""
 
         alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n")
