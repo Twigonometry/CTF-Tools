@@ -2,3 +2,4 @@ https://www.pythoncentral.io/hashing-strings-with-python/
 https://stackoverflow.com/questions/5297448/how-to-get-md5-sum-of-a-string-using-python
 
 https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/
+https://github.com/danielmiessler/SecLists/tree/master/Passwords/Leaked-Databases

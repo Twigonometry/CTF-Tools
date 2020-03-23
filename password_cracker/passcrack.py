@@ -21,8 +21,6 @@ def load_wordlist(file_path):
 def brute_force(hashedpass, wordlist, alg_name):
     """brute force a wordlist using a given algorithm, outputting the password"""
 
-    print(hashedpass)
-
     found = False
 
     print("Running brute force attack using " + alg_name)
@@ -39,9 +37,8 @@ def brute_force(hashedpass, wordlist, alg_name):
         elif alg_name == "NTLM":
             hash = binascii.hexlify(hashlib.new('md4', word.encode('utf-16le')).digest()).decode()
         elif alg_name == "BCRYPT":
-            rounds, salt = parse_bcrypt(hashedpass)
+            salt = hashedpass[0:29]
             hash = bcrypt.hashpw(word.encode('utf-8'), salt.encode('utf-8')).decode()
-            print(hash)
         if hash == hashedpass:
             found = True
             print("Match found:")
@@ -129,7 +126,7 @@ def crack_list(hash_list, file_path):
     #iterate over list
     if method == "1":
         #select hashing algorithm
-        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. BCRYPT\n7. Try above methods in order of complexity\n")
+        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. BCRYPT\n7. Cascade: Try above methods in order of complexity\n")
         alg_name = ALGORITHM_NAMES[alg_choice]
         
         wordlist = load_wordlist(file_path)
@@ -148,7 +145,7 @@ def crack_list(hash_list, file_path):
                 brute_force(hash, wordlist, alg_name)
     elif method == "2":
         #select hashing algorithm
-        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. Try above methods in order of complexity\n")
+        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. Cascade: Try above methods in order of complexity\n")
         if alg_choice == 6:
             alg_choice = 7
         alg_name = ALGORITHM_NAMES[alg_choice]
@@ -169,19 +166,7 @@ def crack_list(hash_list, file_path):
             for hash in hash_list:
                 brute_force_dict(hash, new_path, alg_name)
 
-def parse_bcrypt(hash):
-    """given a bcrypt hash, parse number of rounds and salt"""
-    rounds = int(hash[4:6])
-    #salt = hash[7:29]
-    salt = hash[0:29]
-
-    return rounds, salt
-
 def main():
-    # rounds, salt = parse_bcrypt("$2a$12$EQBIh4LldRg/hseIeCwwyO8be5iwf6YtkLpChvSGChJETJT66SwI6")
-
-    # print(rounds)
-    # print(salt)
 
     print("Welcome to the Password Cracker")
     main_choice = input("1. Crack hashes\n2. Generate a dictionary\n")
