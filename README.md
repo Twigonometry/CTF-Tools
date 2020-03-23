@@ -24,7 +24,9 @@ When attacking a bcrypt hash, the password cracker will automatically parse the 
 
 Supports MD5, SHA-1, SHA-256, SHA-512 & NTLM hashes. Given a precomputed dictionary of hashes, the algorithm will check against the hash of each common password, eliminating the need to hash each one and speeding up your cracking.
 
-This requires some setup; the 'Generate a dictionary' option on the main menu can be used to create a dictionary for any of the above algorithms. Given a wordlist that is stored in the CTF-Tools/password_cracker/wordlists directory, e.g. rockyou.txt, an MD5 dictionary will be created with the filename rockyou_dict_MD5. For example,
+This requires some setup; the 'Generate a dictionary' option on the main menu can be used to create a dictionary for any of the above algorithms. Generating this dictionary may take some time, but it will massively speed up future password cracking.
+
+Given a wordlist that is stored in the CTF-Tools/password_cracker/wordlists directory, e.g. rockyou.txt, an MD5 dictionary will be created with the filename rockyou_dict_MD5. For example,
 
 ```
 Welcome to the Password Cracker
@@ -45,7 +47,7 @@ Attempting to load word list from /wordlists/rockyou-25.txt
 New dictionary created at: wordlists/rockyou-25_dict_MD5.txt
 ```
 
-bcrypt is not available as a dictionary attack, as each password is encrypted with a random salt.
+bcrypt is not available as a dictionary attack, as the algorithm automatically includes a random salt (therefore, the same password could be encrypted differently twice and therefore not easily looked up in a dictionary)
 
 ### Cascade
 
@@ -58,7 +60,7 @@ Enter list of hashes, separated by commas
 f78f2477e949bee2d12a2c540fb6084f, c22b315c040ae6e0efee3518d830362b
 ```
 
-The user could select the cascade option with the brute force attack method (Cascade also works with a dictionary attack, assuming all dictionaries have been generated):
+The user could select the Cascade option with the brute force attack method (Cascade also works with a dictionary attack, assuming a dictionary has been generated for every hashing algorithm except bcrypt):
 
 ```
 Select hashing algorithm:
