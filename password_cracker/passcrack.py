@@ -3,7 +3,7 @@ import json
 import binascii
 import bcrypt
 
-ALGORITHM_NAMES = {"1": "MD5", "2": "SHA-1", "3": "SHA-256", "4": "SHA-512", "5": "NTLM", "6": "BCRYPT", "7": "CASCADE"}
+ALGORITHM_NAMES = ["MD5","SHA-1","SHA-256","SHA-512", "NTLM","BCRYPT","CASCADE"]
 
 def load_wordlist(file_path):
     """load a wordlist from file"""
@@ -126,18 +126,16 @@ def crack_list(hash_list, file_path):
     #iterate over list
     if method == "1":
         #select hashing algorithm
-        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. BCRYPT\n7. Cascade: Try above methods in order of complexity\n")
-        alg_name = ALGORITHM_NAMES[alg_choice]
+        alg_choice = int(input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. BCRYPT\n7. Cascade: Try above methods in order of complexity\n"))
+        alg_name = ALGORITHM_NAMES[alg_choice - 1]
         
         wordlist = load_wordlist(file_path)
         if alg_name == "CASCADE":
-            found = False
             
             #cascade through algorithms, stopping based on their boolean 'found' value
             for hash in hash_list:
-                for alg_no in ALGORITHM_NAMES:
-                    found = brute_force(hash, wordlist, ALGORITHM_NAMES[alg_no])
-                    if found:
+                for i in range(0, 6):
+                    if brute_force(hash, wordlist, ALGORITHM_NAMES[i]):
                         break
 
         else:
@@ -145,22 +143,21 @@ def crack_list(hash_list, file_path):
                 brute_force(hash, wordlist, alg_name)
     elif method == "2":
         #select hashing algorithm
-        alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. Cascade: Try above methods in order of complexity\n")
-        if alg_choice == 6:
-            alg_choice = 7
-        alg_name = ALGORITHM_NAMES[alg_choice]
+        alg_choice = int(input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. Cascade: Try above methods in order of complexity\n"))
+        if alg_choice < 6:
+            alg_name = ALGORITHM_NAMES[alg_choice - 1]
+        else:
+            alg_name = "CASCADE"
 
         split_path = file_path.split(".")
         new_path = "wordlists/" + split_path[0] + "_dict." + split_path[1]
 
         if alg_name == "CASCADE":
-            found = False
             
-            #cascade through algorithms, stopping based on their boolean 'found' value
+            #cascade through algorithms, excluding bcrypt, stopping based on their boolean 'found' value
             for hash in hash_list:
-                for alg_no in ALGORITHM_NAMES:
-                    found = brute_force_dict(hash, new_path, ALGORITHM_NAMES[alg_no])
-                    if found:
+                for i in range(0, 5):
+                    if brute_force_dict(hash, new_path, ALGORITHM_NAMES[i]):
                         break
         else:
             for hash in hash_list:

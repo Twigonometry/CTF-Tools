@@ -104,7 +104,7 @@ Hash: c22b315c040ae6e0efee3518d830362b
 
 *rockyou-25.txt* contains the top 25 rockyou passwords.
 
-*rockyou-75.txt* is the full rockyou list, in descending order of frequency, obtained from the following link
+*rockyou-75.txt* is the full rockyou list, in descending order of frequency, obtained from the following link:
 https://github.com/danielmiessler/SecLists/tree/master/Passwords/Leaked-Databases
 
 ### Mangle Map
