@@ -1,7 +1,7 @@
 # CTF-Tools
 Scripts for CTFs and pentest practice
 
-This program was buit using Python 3. Therefore, user input may cause unexpected behaviour in earlier versions of python, as this code makes use of the input() function. If you are running this program using Python 2.x, consider wrapping user input in quotation marks, or upgrading to Python 3.
+This program was built using Python 3. Therefore, user input may cause unexpected behaviour in earlier versions of python, as this code makes use of the input() function. If you are running this program using Python 2.x, consider wrapping user input in quotation marks, or upgrading to Python 3.
 
 ## Repeater
 Provides functionality for repeating GET/POST requests, with 'payload' options similar to Burp Suite that iterate over a range of numbers.
