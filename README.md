@@ -5,12 +5,16 @@ Scripts for CTFs and pentest practice
 Provides functionality for repeating GET/POST requests, with 'payload' options similar to Burp Suite that iterate over a range of numbers.
 
 ## Password Cracker
-Password cracker using precomputed hash dictionaries with various algorithms, operating over a given wordlist. This wordlist **must be saved** in the CTF-Tools/password_cracker/wordlists directory beforehand. When typing the name of the wordlist, ensure you include the file extension! For example,
+Password cracker using precomputed hash dictionaries with various algorithms, operating over a given wordlist. This wordlist **must be saved** in the CTF-Tools/password_cracker/wordlists directory beforehand.
+
+When typing the name of the wordlist, ensure you include the file extension! For example,
 
 ```
 Enter name of wordlist to be used (should be saved in /wordlists)
 rockyou-25.txt
 ```
+
+When running passcrack.py, **make sure you are in the CTF-Tools/password_cracker directory**, otherwise the password cracker will not be able to find the chosen wordlist.
 
 ### Brute Force Attack
 
@@ -47,7 +51,7 @@ Attempting to load word list from /wordlists/rockyou-25.txt
 New dictionary created at: wordlists/rockyou-25_dict_MD5.txt
 ```
 
-bcrypt is not available as a dictionary attack, as the algorithm automatically includes a random salt (therefore, the same password could be encrypted differently twice and therefore not easily looked up in a dictionary)
+bcrypt is not available as a dictionary attack, as the algorithm automatically includes a random salt (therefore, the same password could be encrypted differently twice and not easily looked up in a dictionary).
 
 ### Cascade
 
@@ -74,7 +78,7 @@ Select hashing algorithm:
 7
 ```
 
-And the password cracker will iterate over each algorithm until it finds a match. As seen below, if it finds a match it will stop early
+And the password cracker will iterate over each algorithm until it finds a match. As seen below, if it finds a match it will stop early:
 
 ```
 Running brute force attack using MD5
@@ -95,8 +99,6 @@ Match found:
 Password: 123456789
 Hash: c22b315c040ae6e0efee3518d830362b
 ```
-
-When running passcrack.py, **make sure you are in the CTF-Tools/password_cracker directory**, otherwise the password cracker will not be able to find the chosen wordlist.
 
 ### Wordlists
 
