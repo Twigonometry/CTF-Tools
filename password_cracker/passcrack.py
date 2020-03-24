@@ -121,12 +121,23 @@ def crack_list(hash_list, file_path):
     """crack a list of hashes"""
     
     #select method
-    method = input("Select attack method:\n1. Brute Force\n2. Brute Force Dictionary\n")
+    method = 0
+
+    while method < 1 or method > 2:
+        try:
+            method = int(input("Select attack method:\n1. Brute Force\n2. Brute Force Dictionary\n"))
+        except:
+            print("Please enter an integer, 1 or 2.")
 
     #iterate over list
-    if method == "1":
+    if method == 1:
         #select hashing algorithm
-        alg_choice = int(input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. BCRYPT\n7. Cascade: Try above methods in order of complexity\n"))
+        alg_choice = 0
+        while alg_choice < 1 or alg_choice > 7:
+            try:
+                alg_choice = int(input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. BCRYPT\n7. Cascade: Try above methods in order of complexity\n"))
+            except:
+                print("Please enter an integer")
         alg_name = ALGORITHM_NAMES[alg_choice - 1]
         
         wordlist = load_wordlist(file_path)
@@ -141,9 +152,14 @@ def crack_list(hash_list, file_path):
         else:
             for hash in hash_list:
                 brute_force(hash, wordlist, alg_name)
-    elif method == "2":
+    elif method == 2:
         #select hashing algorithm
-        alg_choice = int(input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. Cascade: Try above methods in order of complexity\n"))
+        alg_choice = 0
+        while alg_choice < 1 or alg_choice > 6:
+            try:
+                alg_choice = int(input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n6. Cascade: Try above methods in order of complexity\n"))
+            except:
+                print("Please enter an integer")
         if alg_choice < 6:
             alg_name = ALGORITHM_NAMES[alg_choice - 1]
         else:
@@ -166,9 +182,16 @@ def crack_list(hash_list, file_path):
 def main():
 
     print("Welcome to the Password Cracker")
-    main_choice = input("1. Crack hashes\n2. Generate a dictionary\n")
+    
+    main_choice = 0
 
-    if main_choice == "1":
+    while main_choice < 1 or main_choice > 2:
+        try:
+            main_choice = int(input("1. Crack hashes\n2. Generate a dictionary\n"))
+        except:
+            print("Please enter an integer, 1 or 2.")
+
+    if main_choice == 1:
         """crack a list of hashes"""
 
         hash_list = input("Enter list of hashes, separated by commas\n").replace(" ","").split(",")
@@ -176,7 +199,7 @@ def main():
         file_path = input("Enter name of wordlist to be used (should be saved in /wordlists)\n")
 
         crack_list(hash_list, file_path)
-    elif main_choice == "2":
+    elif main_choice == 2:
         """generate a dictionary of hashes"""
 
         alg_choice = input("Select hashing algorithm:\n1. MD5\n2. SHA-1\n3. SHA-256\n4. SHA-512\n5. NTLM\n")
