@@ -3,3 +3,6 @@ https://stackoverflow.com/questions/5297448/how-to-get-md5-sum-of-a-string-using
 
 https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/
 https://github.com/danielmiessler/SecLists/tree/master/Passwords/Leaked-Databases
+
+bcrypt structure and versions:
+https://stackoverflow.com/questions/5393803/can-someone-explain-how-bcrypt-verifies-a-hash/10933491#10933491

@@ -47,10 +47,10 @@ Select hashing algorithm:
 5. NTLM
 1
 Enter name of wordlist to be used (should be saved in /wordlists)
-rockyou-25.txt
-Attempting to load word list from /wordlists/rockyou-25.txt
+rockyou.txt
+Attempting to load word list from /wordlists/rockyou.txt
 
-New dictionary created at: wordlists/rockyou-25_dict_MD5.txt
+New dictionary created at: wordlists/rockyou_dict_MD5.txt
 ```
 
 bcrypt is not available as a dictionary attack, as the algorithm automatically includes a random salt (therefore, the same password could be encrypted differently twice and not easily looked up in a dictionary).
