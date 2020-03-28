@@ -1,0 +1,7 @@
+print ("Importing Key")
+print ("Opening the key file")
+local ssh = io.open("/home/sysadmin/.ssh/authorized_keys","wb")
+print("Writing to the file")
+ssh:write(YOUR_SSH_PUBLIC_KEY_AS_A_STRING)
+print("Closing the file")
+ssh:close()
