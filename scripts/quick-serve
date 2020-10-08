@@ -1,0 +1,13 @@
+#!/bin/bash
+#Start a python simplehttp server in the current directory
+#serverpath - where to start the server
+#filepath - copy a file/directory from specified path to current directory, ready for hosting
+#tmp flag - start simplehttp server in the tmp directory instead
+#pytwo flag - use python 2.x syntax
+#print usage if typed wrong
+
+#quickserve [serverpath] [filepath] [-tmp]
+
+USAGE="usage: quickserve [serverpath] [filepath]\n\toptions:\n\t\t-t, --tmp    Starts in the /tmp/ directory\n\t\t-pytwo    Uses python 2.x syntax instead\n"
+
+printf "$USAGE"
