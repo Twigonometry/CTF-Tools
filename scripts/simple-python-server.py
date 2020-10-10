@@ -16,14 +16,17 @@ Send a POST request:
     curl -d "foo=bar&bin=baz" http://localhost:8000
 """
 import argparse
-from http.server import HTTPServer, BaseHTTPRequestHandler
-
+from http.server import HTTPServer, BaseHTTPRequestHandler, SimpleHTTPRequestHandler
 
 class S(BaseHTTPRequestHandler):
     def _set_headers(self):
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
+
+    def end_headers (self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        SimpleHTTPRequestHandler.end_headers(self)
 
     def _html(self, message):
         """This just generates an HTML document that includes `message`
@@ -44,7 +47,7 @@ class S(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length) # <--- Gets the data itself
         self._set_headers()
         self.wfile.write(b'<html><body><h1>POST!</h1><pre>' + bytes(post_data) + b'</pre></body></html>')
-
+        print(post_data.decode("utf-8"))
 
 def run(server_class=HTTPServer, handler_class=S, addr="localhost", port=8000):
     server_address = (addr, port)
