@@ -1,4 +1,6 @@
 import requests
+import sys
+import getopt
 
 #TO ADD:
 #add functionality for extra params?
@@ -6,6 +8,13 @@ import requests
 #add optional flag to display response - use argparse?
 #specific arg for api key
 #param for some pattern to match in response - e.g. searching for response that indicates correct pass
+
+#USAGE:
+#python3 repeater.py -u url -p list of payloads to be modified in payload options
+#url -u takes a fully qualified domain name as the target - payloads are marked by $x where x is any alphanumeric character - escape a dollar with a '\'
+#program will pick up on dollars and prompt you to specify payload options for each of these - options you provide will use regex replace to encode attack payloads into these positions
+#alternatively, you can provide a list of payload positions with -p - these are defined by [a, b, c] where a, b and c are unique strings in the URL - the first occurrence of these will be treated as the payload, so make sure they only appear once!
+
 class Repeater:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -53,8 +62,30 @@ class Repeater:
         print(request.status_code)
         print(request.headers)
 
+def main(argv):
+
+    url = None
+    payloads = None
+
+    try:
+        opts, args = getopt.getopt(argv,"hu:p:",["url=","payloads="])
+    except getopt.GetoptError:
+        print("USAGE: python3 repeater.py -u <URL> | url=<URL> [-p <payloads> | payloads=<payloads>]")
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print("USAGE: python3 repeater.py -u <URL> [-p <params>]")
+            sys.exit()
+        elif opt in ("-u", "--url"):
+            url = arg
+        elif opt in ("-p", "--payloads"):
+            payloads = arg
+    if url is None:
+        print("USAGE: python3 repeater.py -u <URL> [-p <params>]")
+        sys.exit()
+
+    print("URL: " + str(url))
+    print("Payloads: " + str(payloads))
+
 if __name__ == "__main__":
-    repeater = Repeater()
-    #repeater.repType1("https://www.google.com", "")
-    repeater.setRequest()
-    #repeater.postRequest("http://www.google.com")
+    main(sys.argv[1:])
