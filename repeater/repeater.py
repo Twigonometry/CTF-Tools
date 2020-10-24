@@ -39,6 +39,8 @@ class Repeater:
         for pos in positions:
             self.payloads[pos] = define_payload(self.target, pos)
 
+        print(self.payloads)
+
     #get methods
 
     def get_target(self):
@@ -106,12 +108,16 @@ def define_payload(target, pos):
     #choice of sequence of integers, items from wordlist etc
     #for now, just integers
 
+    payload = {}
+
     fst = None
     while fst is None:
         try:
             fst = int(input("What number to start payload at?\n"))
         except:
             print("Please enter an integer")
+
+    payload['fst'] = fst
 
     lst = None
     while lst is None:
@@ -120,6 +126,8 @@ def define_payload(target, pos):
         except:
             print("Please enter an integer")
 
+    payload['lst'] = lst
+
     step = None
     while step is None:
         try:
@@ -127,7 +135,11 @@ def define_payload(target, pos):
         except:
             print("Please enter an integer")
 
+    payload['step'] = step
+
     print("First: " + str(fst) + "\nLast: " + str(lst) + "\nStep: " + str(step))
+
+    return payload
 
 def main(argv):
 
