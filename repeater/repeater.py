@@ -16,8 +16,25 @@ import getopt
 #alternatively, you can provide a list of payload positions with -p - these are defined by [a, b, c] where a, b and c are unique strings in the URL - the first occurrence of these will be treated as the payload, so make sure they only appear once!
 
 class Repeater:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    target = None
+    positions = []
+    payloads = {}
+
+    def __init__(self, target, positions):
+        """constructor for repeater"""
+        self.target = target
+        self.positions = positions
+
+    #get methods
+
+    def get_target(self):
+        return self.target
+
+    def get_positions(self):
+        return self.positions
+
+    def get_payloads(self):
+        return self.payloads
         
     def repType1(self, target, reqType):
         #print("Hello")
@@ -62,15 +79,19 @@ class Repeater:
         print(request.status_code)
         print(request.headers)
 
+def split_positions(pos_string):
+    positions = pos_string.split(',')
+    return positions
+
 def main(argv):
 
     url = None
-    payloads = None
+    positions = None
 
     try:
-        opts, args = getopt.getopt(argv,"hu:p:",["url=","payloads="])
+        opts, args = getopt.getopt(argv,"hu:p:",["url=","positions="])
     except getopt.GetoptError:
-        print("USAGE: python3 repeater.py -u <URL> | url=<URL> [-p <payloads> | payloads=<payloads>]")
+        print("USAGE: python3 repeater.py -u <URL> | url=<URL> [-p <positions> | positions=<positions>]")
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
@@ -78,14 +99,25 @@ def main(argv):
             sys.exit()
         elif opt in ("-u", "--url"):
             url = arg
-        elif opt in ("-p", "--payloads"):
-            payloads = arg
+        elif opt in ("-p", "--positions"):
+            pos_string = arg
     if url is None:
         print("USAGE: python3 repeater.py -u <URL> [-p <params>]")
         sys.exit()
 
+    positions = split_positions(pos_string)
+
     print("URL: " + str(url))
-    print("Payloads: " + str(payloads))
+    print("Positions: " + ",".join([str(p) for p in positions]))
+
+    #instantiate repeater
+    repeater = Repeater(url, positions)
+
+    print(repeater.get_target())
+
+    pos_copy = repeater.get_positions()
+    for pos in pos_copy:
+        print(str(pos))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
