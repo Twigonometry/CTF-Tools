@@ -98,10 +98,36 @@ def split_positions(pos_string):
     return positions
 
 def define_payload(target, pos):
-    fst = target.find(pos)
-    lst = fst + len(pos)
-    pos_highlight = target[:fst] + "(" + pos + ")" + target[lst:]
+    start = target.find(pos)
+    fin = start + len(pos)
+    pos_highlight = target[:start] + "(" + pos + ")" + target[fin:]
     print("Define payload for position: " + pos_highlight)
+    
+    #choice of sequence of integers, items from wordlist etc
+    #for now, just integers
+
+    fst = None
+    while fst is None:
+        try:
+            fst = int(input("What number to start payload at?\n"))
+        except:
+            print("Please enter an integer")
+
+    lst = None
+    while lst is None:
+        try:
+            lst = int(input("What number to finish payload at?\n"))
+        except:
+            print("Please enter an integer")
+
+    step = None
+    while step is None:
+        try:
+            step = int(input("What step to use?\n"))
+        except:
+            print("Please enter an integer")
+
+    print("First: " + str(fst) + "\nLast: " + str(lst) + "\nStep: " + str(step))
 
 def main(argv):
 
