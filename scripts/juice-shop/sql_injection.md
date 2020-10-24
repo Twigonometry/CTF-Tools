@@ -20,6 +20,8 @@ All following statements to be pasted into the 'username' field in the login for
 
 # Data Exfiltration
 
+These scripts executed by a call to exposed `/rest/products/search` API - SQL statements illustrated for clarity, but scripts best executed by visiting the URL directly.
+
 ## Stealing the Schema
 
 SQL Statement:
