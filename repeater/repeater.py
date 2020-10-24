@@ -11,7 +11,7 @@ import getopt
 
 #USAGE:
 #python3 repeater.py -u url -p list of payloads to be modified in payload options
-#url -u takes a fully qualified domain name as the target - payloads are marked by $x where x is any alphanumeric character - escape a dollar with a '\'
+#url -u takes a fully qualified domain name as the target - payloads are marked by $x$ where x is any alphanumeric character - escape a dollar with a '\'
 #program will pick up on dollars and prompt you to specify payload options for each of these - options you provide will use regex replace to encode attack payloads into these positions
 #alternatively, you can provide a list of payload positions with -p - these are defined by [a, b, c] where a, b and c are unique strings in the URL - the first occurrence of these will be treated as the payload, so make sure they only appear once!
 
@@ -24,6 +24,20 @@ class Repeater:
         """constructor for repeater"""
         self.target = target
         self.positions = positions
+
+        #confirm positions are correct
+        print("Target: " + self.target)
+        print("Positions:")
+        for pos in self.positions:
+            print(str(pos))
+        print("If these positions are incorrect, make sure you have specified a unique string for each, or try wrapping each position in $ signs")
+
+        cont = input("Press q to quit and resubmit your parameters, or any other key to continue")
+        if cont == "q":
+            sys.exit()
+
+        for pos in positions:
+            self.payloads[pos] = define_payload(self.target, pos)
 
     #get methods
 
@@ -83,6 +97,12 @@ def split_positions(pos_string):
     positions = pos_string.split(',')
     return positions
 
+def define_payload(target, pos):
+    fst = target.find(pos)
+    lst = fst + len(pos)
+    pos_highlight = target[:fst] + "(" + pos + ")" + target[lst:]
+    print("Define payload for position: " + pos_highlight)
+
 def main(argv):
 
     url = None
@@ -107,17 +127,8 @@ def main(argv):
 
     positions = split_positions(pos_string)
 
-    print("URL: " + str(url))
-    print("Positions: " + ",".join([str(p) for p in positions]))
-
     #instantiate repeater
     repeater = Repeater(url, positions)
-
-    print(repeater.get_target())
-
-    pos_copy = repeater.get_positions()
-    for pos in pos_copy:
-        print(str(pos))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
