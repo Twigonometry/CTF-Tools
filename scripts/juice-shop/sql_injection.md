@@ -1,3 +1,7 @@
+# Disclaimer
+
+All scripts developed for educational purposes during sessions with Sheffield Ethical Student Hackers Society, and executed on OWASP's dedicated Juice Shop training platform. Do not execute these scripts unless you have explicit permission. SESH Code of Conduct can be found [here](https://shefesh.com/downloads/SESH%20Code%20of%20Conduct.pdf).
+
 # Logging In
 
 All following statements to be pasted into the 'username' field in the login form, with any arbitrary password.
