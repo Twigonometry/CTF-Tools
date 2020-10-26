@@ -83,9 +83,9 @@ class Repeater:
 
             #send request based on verb type
             if payload['verb'] == "GET":
-                r = self.getRequest(url, data, headers)
+                self.getRequest(url, data, headers)
             elif payload['verb'] == "POST":
-                r = self.postRequest(url, data, headers)
+                self.postRequest(url, data, headers)
 
             i += step
 
