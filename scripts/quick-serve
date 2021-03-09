@@ -6,8 +6,20 @@
 #pytwo flag - use python 2.x syntax
 #print usage if typed wrong
 
-#quickserve [serverpath] [filepath] [-tmp]
+#quickserve [serverpath] [filepath] [-t] [-o]
 
-USAGE="usage: quickserve [serverpath] [filepath]\n\toptions:\n\t\t-t, --tmp    Starts in the /tmp/ directory\n\t\t-pytwo    Uses python 2.x syntax instead\n"
+print_usage() {
+    printf "usage: quickserve [serverpath] [filepath]\n\toptions:\n\t\t-t    Starts in the /tmp/ directory\n\t\t-o    Uses old python 2.x syntax instead\n"
+}
 
-printf "$USAGE"
+while getopts 'to' flag; do
+  case "${flag}" in
+    t) printf "temp" ;;
+    o) printf "old" ;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+printf "$1\n"
+printf "$2\n"
