@@ -5,6 +5,6 @@ from datetime import datetime, timedelta
 key = "secretlhfIH&FY*#oysuflkhskjfhefesf"
 
 #encode with HMAC-SHA-256
-encoded = jwt.encode({"exp": datetime.utcnow() + timedelta(days=7)}, key, algorithm="HS256")
+encoded = jwt.encode({"exp": datetime.utcnow() + timedelta(days=7), "name": 1}, key, algorithm="HS256")
 
 print(encoded)
