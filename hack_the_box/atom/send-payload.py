@@ -2,7 +2,8 @@ import netifaces as ni
 import subprocess
 import sys
 import argparse
-from requests import get
+import os
+from pathlib import Path
 
 def get_ip(interface):
     """find your IP on a given interface"""
@@ -32,15 +33,12 @@ def main():
     parser.add_argument("--lip", help="Local IP to listen on. Specify either this or --lint")
     parser.add_argument("--lint", help="Local interface to listen on. Specify either this or --lip")
     parser.add_argument("--lport", help="Local port to listen on. 9001 by default")
+    parser.add_argument("--dir", help="Directory to save payload and stand up server in")
 
+    #parse arguments
     args = parser.parse_args()
 
-    for arg in vars(args):
-        argval = getattr(args, arg)
-        if argval is not None:
-            print(arg + ": " + argval)
-
-    #if args.lip is not None and args.lint is not None -  no need to check this, just take LIP first
+    #get IP, taking --lip as priority over --lint if both provided
     if args.lip is not None:
         ip = args.lip
         print("IP Address: " + ip)
@@ -49,6 +47,16 @@ def main():
     else:
         print("You must provide one of --lip or --lint")
         sys.exit(1)
+
+    #mkdir if doesn't exist
+    if args.dir is not None:
+        dirpath = Path(args.dir)
+
+        if not dirpath.is_dir():
+            print("Directory not found - creating directory")
+            dirpath.mkdir()
+
+    #generate payload
 
     # check SMB running
 
