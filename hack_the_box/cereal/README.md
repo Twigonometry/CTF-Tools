@@ -31,3 +31,5 @@ The script requires launching two listeners:
 - one to catch responses from the XSS - as a debugging technique, I set my XSS to post back the response from the requests that were made via an `<img>` tag. This was a technique I had not used before, and it ended up working very well - in future I might try to add automatic decoding of the base64 response that hits the server
 
 I would have liked to build in a listener to serve up the files and catch the incoming connection, but I wasn't sure how to do that within the same program and handle I/O. I will look at doing this in future, but I was happy with the exploit and didn't want to spend much more time on the box at that point :D
+
+Error handling and opsec could also be added for a script that was being used outside a CTF. For example, editing the XSS payload to make the image invisible, and submitting proper data in the Cereal Request fields.
