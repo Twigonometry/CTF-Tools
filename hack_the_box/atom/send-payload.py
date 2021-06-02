@@ -80,7 +80,7 @@ def main():
     print("Payload saved at: " + payload_path)
     
     #get size of payload
-    size = subprocess.call('stat -c%s "' + payload_path + '"')
+    size = os.path.getsize(Path(payload_path))
     print("Size: " + str(size))
 
 if __name__ == '__main__':
