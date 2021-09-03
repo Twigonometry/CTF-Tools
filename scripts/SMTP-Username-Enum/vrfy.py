@@ -9,14 +9,15 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Connect to the Server
 connect = s.connect((sys.argv[1],25))
 # Receive the banner
-banner = s.recv(1024)
-print(banner)
+banner = s.recv(1024).decode("utf-8")
+print("Server Banner: " + banner)
 # Open file
 f = open(sys.argv[2],'r')
 # VRFY a user
 for user in f.readlines():
   s.send(('VRFY ' + user).encode('utf-8'))
-  result = s.recv(1024)
-  print(result)
+  result = s.recv(1024).decode("utf-8")
+  if "rejected" not in result:
+    print("User Found: " + user)
 # Close the socket
 s.close()
