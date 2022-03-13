@@ -1,5 +1,9 @@
 import cmath
 
+"""
+In true celebration of polynomial majesty, here are some sets of coefficients. I reckon if you find their sum of roots, there may be something for you.
+"""
+
 coeffs = [
     [832, -112, 1],
     [888, -119, 1],
@@ -52,4 +56,7 @@ sums = [sol[2] for sol in sols]
 
 print(sums)
 
-# chars = ''.join([chr(sum) for sum in sums])
+# chars = ''.join([chr(sum.real) for sum in sums])
+
+reals = [sum.real for sum in sums]
+print(sum(reals)) #11.42515715085705
