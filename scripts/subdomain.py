@@ -1,6 +1,9 @@
 import os
 import sys
 
+#usage: python3 subdomain.py https example.com
+#usage: python3 subdomain.py http outdated.htb "-fc 301"
+
 args = sys.argv
 
 protocol = args[1]
